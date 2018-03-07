@@ -74,6 +74,13 @@ function Thermostat(log, config) {
 	//Characteristic.TargetHeatingCoolingState.AUTO = 3;
 	this.targetHeatingCoolingState = Characteristic.TargetHeatingCoolingState.AUTO;
 
+	this.informationService = new Service.AccessoryInformation();
+	this.informationService
+		.setCharacteristic(Characteristic.Manufacturer, config.manufacturer ?  config.manufacturer : "HTTP Manufacturer")
+		.setCharacteristic(Characteristic.Model, config.model ? config.model : "HTTP Model")
+		.setCharacteristic(Characteristic.SerialNumber, config.serialnumber ? config.serialnumber : "HTTP Serial Number");
+	}
+
 	this.service = new Service.Thermostat(this.name);
 
 }
@@ -279,17 +286,6 @@ Thermostat.prototype = {
 	},
 
 	getServices: function() {
-
-		// you can OPTIONALLY create an information service if you wish to override
-		// the default values for things like serial number, model, etc.
-		var informationService = new Service.AccessoryInformation();
-
-		informationService
-			.setCharacteristic(Characteristic.Manufacturer, "HTTP Manufacturer")
-			.setCharacteristic(Characteristic.Model, "HTTP Model")
-			.setCharacteristic(Characteristic.SerialNumber, "HTTP Serial Number");
-
-		
 
 		// Required Characteristics
 		this.service
