@@ -88,7 +88,6 @@ function Thermostat(log, config) {
 		.setCharacteristic(Characteristic.SerialNumber, config.serialnumber ? config.serialnumber : "HTTP Serial Number")
 	      	.setCharacteristic(Characteristic.FirmwareRevision, config.firmware ? config.firmware : "HTTP Firmware")
   		.setCharacteristic(Characteristic.HardwareRevision, config.hardware ? config.hardware : "HTTP Hardware");
-	}
 
 	this.batteryService = new Service.BatteryService();
 	this.batteryService
@@ -97,7 +96,6 @@ function Thermostat(log, config) {
 		//Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL = 0;
 		//Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW = 1;
 		.setCharacteristic(Characteristic.StatusLowBattery, Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
-	}
 
 }
 
