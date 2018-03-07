@@ -28,6 +28,9 @@ Configuration sample:
                 "maxTemp": 25,
                 "minTemp": 15
                 //optional
+                "manufacturer": "Manu Facturer",
+	               "model": "Model A",
+	               "serialnumber": "123-456-789",
                 "maxTemp": "26",
                 "minTemp": "15",
                 "username": "user",
@@ -40,7 +43,7 @@ Configuration sample:
 ```
 # API Expectations
 
-The `apiroute` is used for two main calls: Get from the thermostat and set the target temperature. Your API should provide
+The `apiroute` is used for three main calls: Get from the thermostat, set the target temperature and set the targetHeatingCoolingState. Your API should provide
 
 1. Get any thermostat info
 ```
@@ -52,6 +55,8 @@ GET /status
     currentHeatingCoolingState: INT_VALUE_0_TO_2,
     currentTemperature: FLOAT_VALUE, //prev temperature
     currentRelativeHumidity: FLOAT_VALUE_AS_PERCENTAGE //prev humidity
+    heatingThresholdTemperature: FLOAT_VALUE, //temperature to turn off heating (API does not support actually doing this. This must be done on the server side.)
+    coolingThresholdTemperature: FLOAT_VALUE, //NOT IMPLEMENTED: temperature to turn off cooling (API does not support actually doing this. This must be done on the server side.) 
 }
 ```
 
