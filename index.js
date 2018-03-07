@@ -81,7 +81,7 @@ function Thermostat(log, config) {
 
 	this.thermostatService = new Service.Thermostat(this.name);
 
-	this.informationService = new Service.AccessoryInformation(this.name);
+	this.informationService = new Service.AccessoryInformation(this.name+"info");
 	this.informationService
 		.setCharacteristic(Characteristic.Manufacturer, config.manufacturer ?  config.manufacturer : "HTTP Manufacturer")
 		.setCharacteristic(Characteristic.Model, config.model ? config.model : "HTTP Model")
@@ -89,7 +89,7 @@ function Thermostat(log, config) {
 	      	.setCharacteristic(Characteristic.FirmwareRevision, config.firmware ? config.firmware : "HTTP Firmware")
   		.setCharacteristic(Characteristic.HardwareRevision, config.hardware ? config.hardware : "HTTP Hardware");
 
-	this.batteryService = new Service.BatteryService(this.name);
+	this.batteryService = new Service.BatteryService(this.name+"batt");
 	this.batteryService
 		.setCharacteristic(Characteristic.BatteryLevel, 99) //Percentage
 		//The value property of StatusLowBattery must be one of the following:
