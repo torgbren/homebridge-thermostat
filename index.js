@@ -110,7 +110,7 @@ Thermostat.prototype = {
 		this.log("getCurrentHeatingCoolingState from:", this.apiroute+"/status");
 		request.get({
 			url: this.apiroute+"/status",
-			auth : this.auth
+			auth: this.auth
 		}, function(err, response, body) {
 			if (!err && response.statusCode == 200) {
 				this.log("response success");
@@ -136,7 +136,7 @@ Thermostat.prototype = {
 				this.log("response success");
 				var json = JSON.parse(body); //{"targetHeatingCoolingState":3,"currentHeatingCoolingState":0,"targetTemperature":10,"temperature":12,"humidity":98}
 				this.log("TargetHeatingCoolingState received is %s", json.targetHeatingCoolingState, json.targetStateCode);
-				this.targetHeatingCoolingState = json.targetHeatingCoolingState !== undefined? json.targetHeatingCoolingState : json.targetStateCode;
+				this.targetHeatingCoolingState = json.targetHeatingCoolingState !== undefined ? json.targetHeatingCoolingState : json.targetStateCode;
 				this.log("TargetHeatingCoolingState is now %s", this.targetHeatingCoolingState);
 				//this.service.setCharacteristic(Characteristic.TargetHeatingCoolingState, this.targetHeatingCoolingState);
 				
@@ -163,7 +163,7 @@ Thermostat.prototype = {
 					this.targetHeatingCoolingState = value;
 					callback(null); // success
 				} else {
-					this.log("Error getting state: %s", err);
+					this.log("Error setting TargetHeatingCoolingState: %s", err);
 					callback(err);
 				}
 			}.bind(this));
@@ -192,7 +192,7 @@ Thermostat.prototype = {
 								
 				callback(null, this.currentTemperature); // success
 			} else {
-				this.log("Error getting state: %s", err);
+				this.log("Error getting CurrentTemperature: %s", err);
 				callback(err);
 			}
 		}.bind(this));
@@ -211,7 +211,7 @@ Thermostat.prototype = {
 				this.log("Target temperature is %s", this.targetTemperature);
 				callback(null, this.targetTemperature); // success
 			} else {
-				this.log("Error getting state: %s", err);
+				this.log("Error getting TargetTemperature: %s", err);
 				callback(err);
 			}
 		}.bind(this));
@@ -226,7 +226,7 @@ Thermostat.prototype = {
 				this.log("response success");
 				callback(null); // success
 			} else {
-				this.log("Error getting state: %s", err);
+				this.log("Error setting TargetTemperature: %s", err);
 				callback(err);
 			}
 		}.bind(this));
@@ -267,7 +267,7 @@ Thermostat.prototype = {
 
 				callback(null, this.currentRelativeHumidity); // success
 			} else {
-				this.log("Error getting state: %s", err);
+				this.log("Error getting CurrentRelativeHumidity: %s", err);
 				callback(err);
 			}
 		}.bind(this));
@@ -312,7 +312,7 @@ Thermostat.prototype = {
 
 				callback(null, this.heatingThresholdTemperature); // success
 			} else {
-				this.log("Error getting state: %s", err);
+				this.log("Error getting HeatingThresholdTemperature: %s", err);
 				callback(err);
 			}
 		}.bind(this));
@@ -336,17 +336,19 @@ Thermostat.prototype = {
 				if (json.batteryLevel != undefined)
                                 {
                                   this.log("BatteryLevel %s", json.batteryLevel);
-                                  this.batteryLevel = parseFloat(json.batteryLevel);
+                                  this.batteryLevel = parseInt(json.batteryLevel);
                                 }
                                 else
                                 {
-                                  this.log("BatteryLevel %s", json.batteryLevel);
-                                  this.batteryLevel = parseFloat(json.batteryLevel);
+                                  this.log("BatteryLevel undefined");
+                                  this.batteryLevel = parseInt(0);
+				  this.batteryService = null;
+				  callback(null);
                                 }
 
 				callback(null, this.batteryLevel); // success
 			} else {
-				this.log("Error getting state: %s", err);
+				this.log("Error getting BatteryLevel: %s", err);
 				callback(err);
 			}
 		}.bind(this));
@@ -365,17 +367,19 @@ Thermostat.prototype = {
 				if (json.statusLowBattery != undefined)
                                 {
                                   this.log("StatusLowBattery %s", json.statusLowBattery);
-                                  this.batteryLevel = parseFloat(json.statusLowBattery);
+                                  this.batteryLevel = parseInt(json.statusLowBattery);
                                 }
                                 else
                                 {
-                                  this.log("StatusLowBattery %s", json.statusLowBattery);
-                                  this.batteryLevel = parseFloat(json.statusLowBattery);
+                                  this.log("StatusLowBattery undefined");
+                                  this.batteryLevel = parseInt(0);
+				  this.batteryService = null;
+				  callback(null);
                                 }
 
 				callback(null, this.statusLowBattery); // success
 			} else {
-				this.log("Error getting state: %s", err);
+				this.log("Error getting StatusLowBattery: %s", err);
 				callback(err);
 			}
 		}.bind(this));
