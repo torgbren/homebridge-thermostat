@@ -79,6 +79,8 @@ function Thermostat(log, config) {
 	//Characteristic.TargetHeatingCoolingState.AUTO = 3;
 	this.targetHeatingCoolingState = Characteristic.TargetHeatingCoolingState.AUTO;
 
+	this.thermostatService = new Service.Thermostat(this.name);
+
 	this.informationService = new Service.AccessoryInformation();
 	this.informationService
 		.setCharacteristic(Characteristic.Manufacturer, config.manufacturer ?  config.manufacturer : "HTTP Manufacturer")
@@ -90,14 +92,12 @@ function Thermostat(log, config) {
 
 	this.batteryService = new Service.BatteryService();
 	this.batteryService
-		.setCharacteristic(Characteristic.BatteryLevel, 99); //Percentage
+		.setCharacteristic(Characteristic.BatteryLevel, 99) //Percentage
 		//The value property of StatusLowBattery must be one of the following:
 		//Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL = 0;
 		//Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW = 1;
 		.setCharacteristic(Characteristic.StatusLowBattery, Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
 	}
-
-	this.service = new Service.Thermostat(this.name);
 
 }
 
@@ -386,59 +386,59 @@ Thermostat.prototype = {
 	getServices: function() {
 
 		// Required Characteristics
-		this.service
+		this.thermostatService
 			.getCharacteristic(Characteristic.CurrentHeatingCoolingState)
 			.on('get', this.getCurrentHeatingCoolingState.bind(this));
 
-		this.service
+		this.thermostatService
 			.getCharacteristic(Characteristic.TargetHeatingCoolingState)
 			.on('get', this.getTargetHeatingCoolingState.bind(this))
 			.on('set', this.setTargetHeatingCoolingState.bind(this));
 
-		this.service
+		this.thermostatService
 			.getCharacteristic(Characteristic.CurrentTemperature)
 			.on('get', this.getCurrentTemperature.bind(this));
 
-		this.service
+		this.thermostatService
 			.getCharacteristic(Characteristic.TargetTemperature)
 			.on('get', this.getTargetTemperature.bind(this))
 			.on('set', this.setTargetTemperature.bind(this));
 
-		this.service
+		this.thermostatService
 			.getCharacteristic(Characteristic.TemperatureDisplayUnits)
 			.on('get', this.getTemperatureDisplayUnits.bind(this))
 			.on('set', this.setTemperatureDisplayUnits.bind(this));
 
 		// Optional Characteristics
-		this.service
+		this.thermostatService
 			.getCharacteristic(Characteristic.CurrentRelativeHumidity)
 			.on('get', this.getCurrentRelativeHumidity.bind(this));
 
-		this.service
+		this.thermostatService
 			.getCharacteristic(Characteristic.TargetRelativeHumidity)
 			.on('get', this.getTargetRelativeHumidity.bind(this))
 			.on('set', this.setTargetRelativeHumidity.bind(this));
 		/*
-		this.service
+		this.thermostatService
 			.getCharacteristic(Characteristic.CoolingThresholdTemperature)
 			.on('get', this.getCoolingThresholdTemperature.bind(this));
 		*/
 
-		this.service
+		this.thermostatService
 			.getCharacteristic(Characteristic.HeatingThresholdTemperature)
 			.on('get', this.getHeatingThresholdTemperature.bind(this));
 
-		this.service
+		this.thermostatService
 			.getCharacteristic(Characteristic.Name)
 			.on('get', this.getName.bind(this));
 		
-		this.service.getCharacteristic(Characteristic.CurrentTemperature)
+		this.thermostatService.getCharacteristic(Characteristic.CurrentTemperature)
 			.setProps({
 				minValue: this.minTemp,
 				maxValue: this.maxTemp,
 				minStep: 1
 			});
-		this.service.getCharacteristic(Characteristic.TargetTemperature)
+		this.thermostatService.getCharacteristic(Characteristic.TargetTemperature)
 			.setProps({
 				minValue: this.minTemp,
 				maxValue: this.maxTemp,
@@ -455,6 +455,6 @@ Thermostat.prototype = {
 			.on('get', this.getStatusLowBattery.bind(this));
 	  	  
 		this.log(this.minTemp);
-		return [this.informationService, this.batteryService, this.service];
+		return [this.informationService, this.batteryService, this.thermostatService];
 	}
 };
