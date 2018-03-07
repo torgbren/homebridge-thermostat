@@ -339,15 +339,11 @@ Thermostat.prototype = {
 	},
 
 	getBatteryLevel: function(callback) {
-		this.log("getBatteryLevel from:", this.apiroute+"/status");
-		request.get({
-			url: this.apiroute+"/status",
-			auth : this.auth
-		}, function(err, response, body) {
-			if (!err && response.statusCode == 200) {
-				this.log("response success");
-				var json = JSON.parse(body); //{targetHeatingCoolingState":3,"currentHeatingCoolingState":0,"temperature":"18.10","humidity":"34.10"}
-
+		this.log('getBatteryLevel from: "'+this.apiroute+'/status": waiting_response is "' + this.waiting_response + '"');
+		this.updateState(); //Request update to make sure the data is refreshed
+		var error = null;
+		callback(error, this.batteryLevel);
+		/*BatteryLevel - ### move to updateState
 				if (json.batteryLevel != undefined)
                                 {
                                   this.log("BatteryLevel %s", json.batteryLevel);
@@ -360,12 +356,7 @@ Thermostat.prototype = {
 				  this.batteryService = null;
 				  callback(null);
                                 }
-
-				callback(null, this.batteryLevel); // success
-			} else {
-				this.log("Error getting BatteryLevel: %s", err);
-				callback(err);
-			}
+		*/
 		}.bind(this));
 	},
 	
@@ -496,8 +487,8 @@ Thermostat.prototype = {
 			.setCharacteristic(Characteristic.Manufacturer, this.manufacturer)
 			.setCharacteristic(Characteristic.Model, this.model)
 			.setCharacteristic(Characteristic.SerialNumber, this.serialnumber)
-			.setCharacteristic(Characteristic.FirmwareRevision, this.firmware)
-			.setCharacteristic(Characteristic.HardwareRevision, this.hardware);
+			.setOptionalCharacteristic(Characteristic.FirmwareRevision, this.firmware)
+			.setOptionalCharacteristic(Characteristic.HardwareRevision, this.hardware);
 		
 		return [this.informationService, this.batteryService, this.thermostatService];
 	}
