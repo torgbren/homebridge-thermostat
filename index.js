@@ -486,8 +486,8 @@ Thermostat.prototype = {
 			.setCharacteristic(Characteristic.Manufacturer, this.manufacturer)
 			.setCharacteristic(Characteristic.Model, this.model)
 			.setCharacteristic(Characteristic.SerialNumber, this.serialnumber)
-			.setOptionalCharacteristic(Characteristic.FirmwareRevision, this.firmware)
-			.setOptionalCharacteristic(Characteristic.HardwareRevision, this.hardware);
+			.setCharacteristic(Characteristic.FirmwareRevision, this.firmware)
+			.setCharacteristic(Characteristic.HardwareRevision, this.hardware);
 		
 		return [this.informationService, this.batteryService, this.thermostatService];
 	}
