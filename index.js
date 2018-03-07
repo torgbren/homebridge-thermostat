@@ -12,6 +12,11 @@
             "name": "Thermostat Demo",
             "apiroute": "http://myurl.com",
             //optional
+	    "manufacturer": "Manu Facturer",
+	    "model": "Model A",
+	    "serialnumber": "123-456-789",
+	    "firmware": "v.0.0.1",
+	    "hardware": "A1",
             "maxTemp": "26",
             "minTemp": "15",
             "username": "user",
@@ -65,7 +70,7 @@ function Thermostat(log, config) {
 	this.heatingCoolingState = Characteristic.CurrentHeatingCoolingState.AUTO;
 	this.targetTemperature = 21;
 	this.targetRelativeHumidity = 0.5;
-	this.heatingThresholdTemperature = 25;
+	this.heatingThresholdTemperature = 21;
 	this.coolingThresholdTemperature = 5;
 	// The value property of TargetHeatingCoolingState must be one of the following:
 	//Characteristic.TargetHeatingCoolingState.OFF = 0;
@@ -79,6 +84,17 @@ function Thermostat(log, config) {
 		.setCharacteristic(Characteristic.Manufacturer, config.manufacturer ?  config.manufacturer : "HTTP Manufacturer")
 		.setCharacteristic(Characteristic.Model, config.model ? config.model : "HTTP Model")
 		.setCharacteristic(Characteristic.SerialNumber, config.serialnumber ? config.serialnumber : "HTTP Serial Number");
+	      	.setCharacteristic(Characteristic.FirmwareRevision, config.firmware ? config.firmware : "HTTP Firmware");
+  		.setCharacteristic(Characteristic.HardwareRevision, config.hardware ? config.hardware : "HTTP Hardware");
+	}
+
+	this.batteryService = new Service.BatteryService();
+	this.batteryService
+		.setCharacteristic(Characteristic.BatteryLevel, 99); //Percentage
+		//The value property of StatusLowBattery must be one of the following:
+		//Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL = 0;
+		//Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW = 1;
+		.setCharacteristic(Characteristic.StatusLowBattery, Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
 	}
 
 	this.service = new Service.Thermostat(this.name);
@@ -191,8 +207,9 @@ Thermostat.prototype = {
 		}, function(err, response, body) {
 			if (!err && response.statusCode == 200) {
 				this.log("response success");
-				var json = JSON.parse(body); //{targetHeatingCoolingState":3,"currentHeatingCoolingState":0"temperature":"18.10","humidity":"34.10"}
+				var json = JSON.parse(body); //{targetHeatingCoolingState":3,"currentHeatingCoolingState":0"currentTemperature":"18.10","humidity":"34.10"}
 				this.targetTemperature = parseFloat(json.targetTemperature);
+				this.heatingThresholdTemperature = parseFloat(json.heatingThresholdTemperature);
 				this.log("Target temperature is %s", this.targetTemperature);
 				callback(null, this.targetTemperature); // success
 			} else {
@@ -275,9 +292,32 @@ Thermostat.prototype = {
 		callback(error, this.coolingThresholdTemperature);
 	},
 */	getHeatingThresholdTemperature: function(callback) {
-		this.log("getHeatingThresholdTemperature :" , this.heatingThresholdTemperature);
-		var error = null;
-		callback(error, this.heatingThresholdTemperature);
+		this.log("getHeatingThresholdTemperature from:", this.apiroute+"/status");
+		request.get({
+			url: this.apiroute+"/status",
+			auth : this.auth
+		}, function(err, response, body) {
+			if (!err && response.statusCode == 200) {
+				this.log("response success");
+				var json = JSON.parse(body); //{"state":"OFF","targetStateCode":5,"temperature":"18.10","heatingThresholdTemperature":"21.00"}
+				
+				if (json.heatingThresholdTemperature != undefined)
+                                {
+                                  this.log("Heating threshold temperature is %s", json.heatingThresholdTemperature);
+                                  this.heatingThresholdTemperature = parseFloat(json.heatingThresholdTemperature);
+                                }
+                                else
+                                {
+                                  this.log("Heating threshold temperature is %s", json.heatingThresholdTemperature);
+                                  this.heatingThresholdTemperature = parseFloat(json.heatingThresholdTemperature);
+                                }
+
+				callback(null, this.heatingThresholdTemperature); // success
+			} else {
+				this.log("Error getting state: %s", err);
+				callback(err);
+			}
+		}.bind(this));
 	},
 	getName: function(callback) {
 		this.log("getName :", this.name);
@@ -285,6 +325,64 @@ Thermostat.prototype = {
 		callback(error, this.name);
 	},
 
+	getBatteryLevel: function(callback) {
+		this.log("getBatteryLevel from:", this.apiroute+"/status");
+		request.get({
+			url: this.apiroute+"/status",
+			auth : this.auth
+		}, function(err, response, body) {
+			if (!err && response.statusCode == 200) {
+				this.log("response success");
+				var json = JSON.parse(body); //{targetHeatingCoolingState":3,"currentHeatingCoolingState":0,"temperature":"18.10","humidity":"34.10"}
+
+				if (json.batteryLevel != undefined)
+                                {
+                                  this.log("BatteryLevel %s", json.batteryLevel);
+                                  this.batteryLevel = parseFloat(json.batteryLevel);
+                                }
+                                else
+                                {
+                                  this.log("BatteryLevel %s", json.batteryLevel);
+                                  this.batteryLevel = parseFloat(json.batteryLevel);
+                                }
+
+				callback(null, this.batteryLevel); // success
+			} else {
+				this.log("Error getting state: %s", err);
+				callback(err);
+			}
+		}.bind(this));
+	},
+	
+	getStatusLowBattery: function(callback) {
+		this.log("getStatusLowBattery from:", this.apiroute+"/status");
+		request.get({
+			url: this.apiroute+"/status",
+			auth : this.auth
+		}, function(err, response, body) {
+			if (!err && response.statusCode == 200) {
+				this.log("response success");
+				var json = JSON.parse(body); //{targetHeatingCoolingState":3,"currentHeatingCoolingState":0,"temperature":"18.10","humidity":"34.10"}
+
+				if (json.statusLowBattery != undefined)
+                                {
+                                  this.log("StatusLowBattery %s", json.statusLowBattery);
+                                  this.batteryLevel = parseFloat(json.statusLowBattery);
+                                }
+                                else
+                                {
+                                  this.log("StatusLowBattery %s", json.statusLowBattery);
+                                  this.batteryLevel = parseFloat(json.statusLowBattery);
+                                }
+
+				callback(null, this.statusLowBattery); // success
+			} else {
+				this.log("Error getting state: %s", err);
+				callback(err);
+			}
+		}.bind(this));
+	},
+	
 	getServices: function() {
 
 		// Required Characteristics
@@ -333,6 +431,7 @@ Thermostat.prototype = {
 		this.service
 			.getCharacteristic(Characteristic.Name)
 			.on('get', this.getName.bind(this));
+		
 		this.service.getCharacteristic(Characteristic.CurrentTemperature)
 			.setProps({
 				minValue: this.minTemp,
@@ -345,7 +444,17 @@ Thermostat.prototype = {
 				maxValue: this.maxTemp,
 				minStep: 1
 			});
+		
+		//Battery Service
+		this.batteryService
+			.getCharacteristic(Characteristic.BatteryLevel)
+			.on('get', this.getBatteryLevel.bind(this));
+		
+		this.batteryService
+			.getCharacteristic(Characteristic.StatusLowBattery)
+			.on('get', this.getStatusLowBattery.bind(this));
+	  	  
 		this.log(this.minTemp);
-		return [informationService, this.service];
+		return [this.informationService, this.batteryService, this.service];
 	}
 };
