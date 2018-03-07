@@ -12,11 +12,14 @@
             "name": "Thermostat Demo",
             "apiroute": "http://myurl.com",
             //optional
+	    "timeout": 3000, //###Under development - In milliseconds
+	    "update_interval": 7200, //###Under development - In milliseconds
+	    "units": "C", //"C" for Celcius or "F" for Farenheit
 	    "manufacturer": "Manu Facturer",
 	    "model": "Model A",
 	    "serialnumber": "123-456-789",
-	    "firmware": "v.0.0.1",
-	    "hardware": "A1",
+	    "firmware": "v.0.0.1", //###Under development 
+	    "hardware": "A1", //###Under development 
             "maxTemp": "26",
             "minTemp": "15",
             "username": "user",
@@ -51,19 +54,29 @@ function Thermostat(log, config) {
 	this.username = config.username || null;
 	this.password = config.password || null;
 	
+	//###################### TODO #########################################
+	//Implement separate updateState function to reduce number of requests
+	//this.timeout = config.timeout || "3000";
+   	//this.update_interval = Number( config.update_interval || "7200" );
+
 	if(this.username != null && this.password != null){
 		this.auth = {
 			user : this.username,
 			pass : this.password
 		};
 	}
-
+	this.units = config.units || "C";
+   	//The value property of TemperatureDisplayUnits must be one of the following:
 	//Characteristic.TemperatureDisplayUnits.CELSIUS = 0;
 	//Characteristic.TemperatureDisplayUnits.FAHRENHEIT = 1;
-	this.temperatureDisplayUnits = Characteristic.TemperatureDisplayUnits.CELSIUS;
+	if (this.units=="F") {
+		this.temperatureDisplayUnits = Characteristic.TemperatureDisplayUnits.FAHRENHEIT;
+	} else {
+		this.temperatureDisplayUnits = Characteristic.TemperatureDisplayUnits.CELSIUS;
+	}
 	this.currentTemperature = 19;
 	this.currentRelativeHumidity = 0.70;
-	// The value property of CurrentHeatingCoolingState must be one of the following:
+	//The value property of CurrentHeatingCoolingState must be one of the following:
 	//Characteristic.CurrentHeatingCoolingState.OFF = 0;
 	//Characteristic.CurrentHeatingCoolingState.HEAT = 1;
 	//Characteristic.CurrentHeatingCoolingState.COOL = 2;
@@ -72,7 +85,7 @@ function Thermostat(log, config) {
 	this.targetRelativeHumidity = 0.5;
 	this.heatingThresholdTemperature = 21;
 	this.coolingThresholdTemperature = 5;
-	// The value property of TargetHeatingCoolingState must be one of the following:
+	//The value property of TargetHeatingCoolingState must be one of the following:
 	//Characteristic.TargetHeatingCoolingState.OFF = 0;
 	//Characteristic.TargetHeatingCoolingState.HEAT = 1;
 	//Characteristic.TargetHeatingCoolingState.COOL = 2;
@@ -81,22 +94,18 @@ function Thermostat(log, config) {
 
 	this.thermostatService = new Service.Thermostat(this.name);
 
-	this.informationService = new Service.AccessoryInformation(this.name+"info");
-	this.informationService
-		.setCharacteristic(Characteristic.Manufacturer, config.manufacturer ?  config.manufacturer : "HTTP Manufacturer")
-		.setCharacteristic(Characteristic.Model, config.model ? config.model : "HTTP Model")
-		.setCharacteristic(Characteristic.SerialNumber, config.serialnumber ? config.serialnumber : "HTTP Serial Number")
-	      	.setCharacteristic(Characteristic.FirmwareRevision, config.firmware ? config.firmware : "HTTP Firmware")
-  		.setCharacteristic(Characteristic.HardwareRevision, config.hardware ? config.hardware : "HTTP Hardware");
-
-	this.batteryService = new Service.BatteryService(this.name+"batt");
-	this.batteryService
-		.setCharacteristic(Characteristic.BatteryLevel, 99) //Percentage
-		//The value property of StatusLowBattery must be one of the following:
-		//Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL = 0;
-		//Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW = 1;
-		.setCharacteristic(Characteristic.StatusLowBattery, Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
-
+	//InformationService
+	this.manufacturer = config.manufacturer || "HTTP Manufacturer";
+   	this.model = config.model || "HTTP Model";
+   	this.serialnumber = config.serialnumber || "HTTP Serial Number";
+	this.firmware = config.firmware || "HTTP Firmware";
+	this.hardware = config.hardware || "HTTP Hardware";
+	
+	//BatteryService
+	this.batteryLevel = 99;
+	this.chargingState = Characteristic.ChargingState.NOT_CHARGEABLE;
+	this.statusLowBattery = Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL;
+	
 }
 
 Thermostat.prototype = {
@@ -105,7 +114,13 @@ Thermostat.prototype = {
 		this.log("Identify requested!");
 		callback(null);
 	},
-	// Required
+	//######################## TODO ########################
+	//UpdateState
+	//this.timeout = config.timeout || "3000";
+   	//this.update_interval = Number( config.update_interval || "7200" );
+	
+	//Information Requests
+	//Required
 	getCurrentHeatingCoolingState: function(callback) {
 		this.log("getCurrentHeatingCoolingState from:", this.apiroute+"/status");
 		request.get({
@@ -446,8 +461,26 @@ Thermostat.prototype = {
 				maxValue: this.maxTemp,
 				minStep: 1
 			});
+		//this.log(this.minTemp);
 		
 		//Battery Service
+		this.batteryService = new Service.BatteryService();
+		this.batteryService
+			//The value property of BatteryLevel must be an integer representing a percentage:
+			.setCharacteristic(Characteristic.BatteryLevel, this.batteryLevel)
+			//The value property of ChargingState must be one of the following:
+			//Characteristic.ChargingState.NOT_CHARGING = 0;
+			//Characteristic.ChargingState.CHARGING = 1;
+			//Characteristic.ChargingState.NOT_CHARGEABLE = 2;
+			.setCharacteristic(Characteristic.ChargingState, this.chargingState)
+			//The value property of StatusLowBattery must be one of the following:
+			//Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL = 0;
+			//Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW = 1;
+			.setCharacteristic(Characteristic.StatusLowBattery, this.statusLowBattery);
+		this.log("Battery level: %s", this.batteryLevel);
+		this.log("Charging state: %s", this.chargingState);
+		this.log("Status low battery: %s", this.statusLowBattery);
+		
 		this.batteryService
 			.getCharacteristic(Characteristic.BatteryLevel)
 			.on('get', this.getBatteryLevel.bind(this));
@@ -456,7 +489,16 @@ Thermostat.prototype = {
 			.getCharacteristic(Characteristic.StatusLowBattery)
 			.on('get', this.getStatusLowBattery.bind(this));
 	  	  
-		this.log(this.minTemp);
+		
+		//Information Service
+		this.informationService = new Service.AccessoryInformation();
+		this.informationService
+			.setCharacteristic(Characteristic.Manufacturer, this.manufacturer)
+			.setCharacteristic(Characteristic.Model, this.model)
+			.setCharacteristic(Characteristic.SerialNumber, this.serialnumber)
+			.setCharacteristic(Characteristic.FirmwareRevision, this.firmware)
+			.setCharacteristic(Characteristic.HardwareRevision, this.hardware);
+		
 		return [this.informationService, this.batteryService, this.thermostatService];
 	}
 };
