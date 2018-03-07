@@ -357,7 +357,6 @@ Thermostat.prototype = {
 				  callback(null);
                                 }
 		*/
-		}.bind(this));
 	},
 	
 	getStatusLowBattery: function(callback) {
