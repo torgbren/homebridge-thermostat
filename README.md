@@ -29,8 +29,8 @@ Configuration sample:
                 "minTemp": 15
                 //optional
                 "manufacturer": "Manu Facturer",
-	        "model": "Model A",
-	        "serialnumber": "123-456-789",
+                "model": "Model A",
+                "serialnumber": "123-456-789",
                 "maxTemp": "26",
                 "minTemp": "15",
                 "username": "user",
