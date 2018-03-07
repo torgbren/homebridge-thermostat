@@ -118,7 +118,93 @@ Thermostat.prototype = {
 	//UpdateState
 	//this.timeout = config.timeout || "3000";
    	//this.update_interval = Number( config.update_interval || "7200" );
-	
+	updateState: function() {
+      		//Ensure previous call is finished
+      		if (this.waiting_response) {
+        		this.log('Avoid updateState as previous response does not arrived yet');
+        		return;
+      		}
+		this.waiting_response = true;
+		
+		this.log("getStatus from:", this.apiroute+"/status");
+		request.get({
+			url: this.apiroute+"/status",
+			auth: this.auth
+		}, function(err, response, body) {
+			if (!err && response.statusCode == 200) {
+				this.log("response success");
+				var json = JSON.parse(body);
+				
+				//currentHeatingCoolingState
+				this.log("currentHeatingCoolingState is %s", json.currentHeatingCoolingState);
+				this.currentHeatingCoolingState = json.currentHeatingCoolingState;
+				//this.service.setCharacteristic(Characteristic.CurrentHeatingCoolingState, this.currentHeatingCoolingState);
+				
+				//targetHeatingCoolingState
+				this.log("TargetHeatingCoolingState received is %s", json.targetHeatingCoolingState, json.targetStateCode);
+				this.targetHeatingCoolingState = json.targetHeatingCoolingState !== undefined ? json.targetHeatingCoolingState : json.targetStateCode;
+				this.log("TargetHeatingCoolingState is now %s", this.targetHeatingCoolingState);
+				//this.service.setCharacteristic(Characteristic.TargetHeatingCoolingState, this.targetHeatingCoolingState);
+
+				//currentTemperature
+				if (json.currentTemperature != undefined) {
+                                  	this.log("CurrentTemperature %s", json.currentTemperature);
+                                  	this.currentTemperature = parseFloat(json.currentTemperature);
+                                } else {
+                                  	this.log("Temperature %s", json.temperature);
+                                  	this.currentTemperature = parseFloat(json.temperature);
+                                }
+
+				//targetTemperature
+				this.targetTemperature = parseFloat(json.targetTemperature);
+				this.heatingThresholdTemperature = parseFloat(json.heatingThresholdTemperature);
+				this.log("Target temperature is %s", this.targetTemperature);
+
+				//currentRelativeHumidity
+				if (json.currentRelativeHumidity != undefined) {
+                                  	this.log("Humidity state is %s", json.currentRelativeHumidity);
+                                  	this.currentRelativeHumidity = parseFloat(json.currentRelativeHumidity);
+                                } else {
+                                  	this.log("Humidity %s", json.humidity);
+                                  	this.currentRelativeHumidity = parseFloat(json.humidity);
+                                }
+
+				//
+				if (json.heatingThresholdTemperature != undefined) {
+					  this.log("Heating threshold temperature is %s", json.heatingThresholdTemperature);
+                                  	this.heatingThresholdTemperature = parseFloat(json.heatingThresholdTemperature);
+                                } else {
+                                  	this.log("Heating threshold temperature is %s", json.heatingThresholdTemperature);
+                                  	this.heatingThresholdTemperature = parseFloat(json.heatingThresholdTemperature);
+                                }
+
+				//batteryLevel
+				if (json.batteryLevel != undefined) {
+					  this.log("BatteryLevel %s", json.batteryLevel);
+					  this.batteryLevel = parseInt(json.batteryLevel);
+                                } else {
+					  this.log("BatteryLevel undefined");
+                                	this.batteryLevel = parseInt(0);
+					  //###
+					  this.batteryService = null;
+                                }
+
+				//statusLowBattery
+				if (json.statusLowBattery != undefined) {
+					  this.log("StatusLowBattery %s", json.statusLowBattery);
+					  this.batteryLevel = parseInt(json.statusLowBattery);
+                                } else {
+					  this.log("StatusLowBattery undefined");
+					  this.batteryLevel = parseInt(0);
+					  //###
+					  this.batteryService = null;
+                                }	
+			} else {
+				this.log("Error getting CurrentHeatingCoolingState: %s", err);
+			}
+		this.log("updateState was successful");
+		this.waiting_response = false;
+	},
 	//Information Requests
 	//Required
 	getCurrentHeatingCoolingState: function(callback) {
