@@ -83,8 +83,8 @@ function Thermostat(log, config) {
 	this.informationService
 		.setCharacteristic(Characteristic.Manufacturer, config.manufacturer ?  config.manufacturer : "HTTP Manufacturer")
 		.setCharacteristic(Characteristic.Model, config.model ? config.model : "HTTP Model")
-		.setCharacteristic(Characteristic.SerialNumber, config.serialnumber ? config.serialnumber : "HTTP Serial Number");
-	      	.setCharacteristic(Characteristic.FirmwareRevision, config.firmware ? config.firmware : "HTTP Firmware");
+		.setCharacteristic(Characteristic.SerialNumber, config.serialnumber ? config.serialnumber : "HTTP Serial Number")
+	      	.setCharacteristic(Characteristic.FirmwareRevision, config.firmware ? config.firmware : "HTTP Firmware")
   		.setCharacteristic(Characteristic.HardwareRevision, config.hardware ? config.hardware : "HTTP Hardware");
 	}
 
