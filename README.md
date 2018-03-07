@@ -57,6 +57,8 @@ GET /status
     currentRelativeHumidity: FLOAT_VALUE_AS_PERCENTAGE //prev humidity
     heatingThresholdTemperature: FLOAT_VALUE, //temperature to turn off heating (API does not support actually doing this. This must be done on the server side.)
     coolingThresholdTemperature: FLOAT_VALUE, //NOT IMPLEMENTED: temperature to turn off cooling (API does not support actually doing this. This must be done on the server side.) 
+    statusLowBattery: 0, //1 = True, 0 = False
+    batteryLevel: 95 //Percentage
 }
 ```
 
