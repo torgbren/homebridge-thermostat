@@ -408,9 +408,10 @@ Thermostat.prototype = {
 			//Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL = 0;
 			//Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW = 1;
 			.setCharacteristic(Characteristic.StatusLowBattery, this.statusLowBattery);
-		this.log("Battery level: %s", this.batteryLevel);
+		/*this.log("Battery level: %s", this.batteryLevel);
 		this.log("Charging state: %s", this.chargingState);
 		this.log("Status low battery: %s", this.statusLowBattery);
+		*/
 		
 		this.batteryService
 			.getCharacteristic(Characteristic.BatteryLevel)
