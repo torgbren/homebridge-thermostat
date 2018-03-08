@@ -139,13 +139,13 @@ Thermostat.prototype = {
 				//currentHeatingCoolingState
 				this.log("currentHeatingCoolingState is %s", json.currentHeatingCoolingState);
 				this.currentHeatingCoolingState = json.currentHeatingCoolingState;
-				//this.service.setCharacteristic(Characteristic.CurrentHeatingCoolingState, this.currentHeatingCoolingState);
+				//this.thermostatService.setCharacteristic(Characteristic.CurrentHeatingCoolingState, this.currentHeatingCoolingState);
 				
 				//targetHeatingCoolingState
 				this.log("TargetHeatingCoolingState received is %s", json.targetHeatingCoolingState, json.targetStateCode);
 				this.targetHeatingCoolingState = json.targetHeatingCoolingState !== undefined ? json.targetHeatingCoolingState : json.targetStateCode;
 				this.log("TargetHeatingCoolingState is now %s", this.targetHeatingCoolingState);
-				//this.service.setCharacteristic(Characteristic.TargetHeatingCoolingState, this.targetHeatingCoolingState);
+				//this.thermostatService.setCharacteristic(Characteristic.TargetHeatingCoolingState, this.targetHeatingCoolingState);
 
 				//currentTemperature
 				if (json.currentTemperature != undefined) {
@@ -212,7 +212,7 @@ Thermostat.prototype = {
 	getCurrentHeatingCoolingState: function(callback) {
 		this.log('getCurrentHeatingCoolingState from: "'+this.apiroute+'/status": waiting_response is "' + this.waiting_response + '"');
 		this.updateState(); //Request update to make sure the data is refreshed
-		this.service.setCharacteristic(Characteristic.CurrentHeatingCoolingState, this.currentHeatingCoolingState);
+		this.thermostatService.setCharacteristic(Characteristic.CurrentHeatingCoolingState, this.currentHeatingCoolingState);
 		callback(this.currentHeatingCoolingState);
 	},
 	getTargetHeatingCoolingState: function(callback) {
@@ -232,7 +232,7 @@ Thermostat.prototype = {
 			}, function(err, response, body) {
 				if (!err && response.statusCode == 200) {
 					this.log("response success");
-					//this.service.setCharacteristic(Characteristic.TargetHeatingCoolingState, value);
+					//this.thermostatService.setCharacteristic(Characteristic.TargetHeatingCoolingState, value);
 					this.targetHeatingCoolingState = value;
 					callback(null); // success
 				} else {
