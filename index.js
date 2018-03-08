@@ -201,7 +201,7 @@ Thermostat.prototype = {
 					  this.batteryService = null;
                                 }	
 			} else {
-				this.log("Error getting CurrentHeatingCoolingState: %s", err);
+				this.log("Error updateState: %s", err);
 			}
 		}.bind(this));
 		this.log("updateState was successful");
