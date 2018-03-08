@@ -58,7 +58,7 @@ function Thermostat(log, config) {
 	//###################### TODO #########################################
 	//Implement separate updateState function to reduce number of requests
 	//this.timeout = config.timeout || "3000";
-   	//this.update_interval = Number( config.update_interval || "7200" );
+   	this.update_interval = Number(config.update_interval || "7200");
 
 	if(this.username != null && this.password != null){
 		this.auth = {
@@ -125,6 +125,10 @@ Thermostat.prototype = {
         		this.log('Avoid updateState as previous response does not arrived yet');
         		return;
       		}
+      		//####if (this.update_interval) {
+        	//	this.log('Avoid updateState for the next interval');
+        	//	return;
+      		//}
 		this.waiting_response = true;
 		
 		this.log("getStatus from:", this.apiroute+"/status");
@@ -172,7 +176,7 @@ Thermostat.prototype = {
 
 				//
 				if (json.heatingThresholdTemperature != undefined) {
-					  this.log("Heating threshold temperature is %s", json.heatingThresholdTemperature);
+					this.log("Heating threshold temperature is %s", json.heatingThresholdTemperature);
                                   	this.heatingThresholdTemperature = parseFloat(json.heatingThresholdTemperature);
                                 } else {
                                   	this.log("Heating threshold temperature is %s", json.heatingThresholdTemperature);
