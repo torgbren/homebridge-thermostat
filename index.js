@@ -213,14 +213,12 @@ Thermostat.prototype = {
 		this.log('getCurrentHeatingCoolingState from: "'+this.apiroute+'/status": waiting_response is "' + this.waiting_response + '"');
 		this.updateState(); //Request update to make sure the data is refreshed
 		this.service.setCharacteristic(Characteristic.CurrentHeatingCoolingState, this.currentHeatingCoolingState);
-		var error = null;
-		callback(error, this.currentHeatingCoolingState);
+		callback(this.currentHeatingCoolingState);
 	},
 	getTargetHeatingCoolingState: function(callback) {
 		this.log('getTargetHeatingCoolingState from: "'+this.apiroute+'/status": waiting_response is "' + this.waiting_response + '"');
 		this.updateState(); //Request update to make sure the data is refreshed
-		var error = null;
-		callback(error, this.targetHeatingCoolingState);
+		callback(this.targetHeatingCoolingState);
 	},
 	setTargetHeatingCoolingState: function(value, callback) {
 		if(value === undefined) {
@@ -247,14 +245,12 @@ Thermostat.prototype = {
 	getCurrentTemperature: function(callback) {
 		this.log('getCurrentTemperature from: "'+this.apiroute+'/status": waiting_response is "' + this.waiting_response + '"');
 		this.updateState(); //Request update to make sure the data is refreshed
-		var error = null;
-		callback(error, this.currentTemperature);
+		callback(this.currentTemperature);
 	},
 	getTargetTemperature: function(callback) {
 		this.log('getTargetTemperature from: "'+this.apiroute+'/status": waiting_response is "' + this.waiting_response + '"');
 		this.updateState(); //Request update to make sure the data is refreshed
-		var error = null;
-		callback(error, this.targetTemperature);
+		callback(this.targetTemperature);
 	},
 	setTargetTemperature: function(value, callback) {
 		this.log("setTargetTemperature from:", this.apiroute+"/targetTemperature/"+value);
@@ -274,7 +270,7 @@ Thermostat.prototype = {
 	getTemperatureDisplayUnits: function(callback) {
 		this.log("getTemperatureDisplayUnits:", this.temperatureDisplayUnits);
 		var error = null;
-		callback(error, this.temperatureDisplayUnits);
+		callback(this.temperatureDisplayUnits);
 	},
 	setTemperatureDisplayUnits: function(value, callback) {
 		this.log("setTemperatureDisplayUnits from %s to %s", this.temperatureDisplayUnits, value);
@@ -287,13 +283,12 @@ Thermostat.prototype = {
 	getCurrentRelativeHumidity: function(callback) {
 		this.log('getCurrentRelativeHumidity from: "'+this.apiroute+'/status": waiting_response is "' + this.waiting_response + '"');
 		this.updateState(); //Request update to make sure the data is refreshed
-		var error = null;
-		callback(error, this.currentRelativeHumidity);
+		callback(this.currentRelativeHumidity);
 	},
 	getTargetRelativeHumidity: function(callback) {
 		this.log("getTargetRelativeHumidity:", this.targetRelativeHumidity);
 		var error = null;
-		callback(error, this.targetRelativeHumidity);
+		callback(this.targetRelativeHumidity);
 	},
 	setTargetRelativeHumidity: function(value, callback) {
 		this.log("setTargetRelativeHumidity from/to :", this.targetRelativeHumidity, value);
@@ -310,25 +305,22 @@ Thermostat.prototype = {
 */	getHeatingThresholdTemperature: function(callback) {
 		this.log('getHeatingThresholdTemperature from: "'+this.apiroute+'/status": waiting_response is "' + this.waiting_response + '"');
 		this.updateState(); //Request update to make sure the data is refreshed
-		var error = null;
-		callback(error, this.heatingThresholdTemperature);
+		callback(this.heatingThresholdTemperature);
 	},
 	getName: function(callback) {
 		this.log("getName :", this.name);
 		var error = null;
-		callback(error, this.name);
+		callback(this.name);
 	},
 	getBatteryLevel: function(callback) {
 		this.log('getBatteryLevel from: "'+this.apiroute+'/status": waiting_response is "' + this.waiting_response + '"');
 		this.updateState(); //Request update to make sure the data is refreshed
-		var error = null;
-		callback(error, this.batteryLevel);
+		callback(this.batteryLevel);
 	},
 	getStatusLowBattery: function(callback) {
 		this.log('getStatusLowBattery from: "'+this.apiroute+'/status": waiting_response is "' + this.waiting_response + '"');
 		this.updateState(); //Request update to make sure the data is refreshed
-		var error = null;
-		callback(error, this.statusLowBattery);
+		callback(this.statusLowBattery);
 	},
 	
 	getServices: function() {
